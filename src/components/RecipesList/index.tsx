@@ -1,9 +1,10 @@
+import { FC, memo } from "react";
 import { Grid } from "@mui/material";
 import { useQuery } from "react-query";
 import { IRecipe } from "../../interfaces/Recipe";
 import RecipesItem from "../RecipeItem";
-import axios from "axios";
-import { FC } from "react";
+import RecipeSkeleton from "../RecipeItem/Skeleton";
+import RecipesAPI from "../../api/Recipes";
 
 interface IList {
   queryString: string;
@@ -11,18 +12,20 @@ interface IList {
 
 const RecipesList: FC<IList> = ({ queryString }) => {
   const { isLoading, error, data } = useQuery<{ results: IRecipe[] }, Error>(
-    ["RecipesListRandom", queryString],
-    () =>
-      axios
-        .get("http://localhost:3000/api/recipes/complexSearch", {
-          params: {
-            queryString: queryString,
-          },
-        })
-        .then((res) => res.data)
+    ["RecipesListComplexSearch", queryString],
+    () => RecipesAPI.getComplexQueryRecipes(queryString)
   );
 
-  if (isLoading) return "Loading...";
+  if (isLoading)
+    return (
+      <Grid container spacing={3}>
+        {[1, 2, 3, 4].map((i) => (
+          <Grid key={i} item xs={12} md={3} justifyContent="center">
+            <RecipeSkeleton />
+          </Grid>
+        ))}
+      </Grid>
+    );
 
   if (error) return "An error has occurred: " + error.message;
 
@@ -35,4 +38,4 @@ const RecipesList: FC<IList> = ({ queryString }) => {
   );
 };
 
-export default RecipesList;
+export default memo(RecipesList);

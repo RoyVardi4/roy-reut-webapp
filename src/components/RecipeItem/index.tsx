@@ -1,4 +1,4 @@
-import { FC, useMemo, useState } from "react";
+import { FC, memo, useState } from "react";
 import {
   Grid,
   Card,
@@ -20,6 +20,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import { red } from "@mui/material/colors";
 import { removeTags } from "../../helpers/StringFunctions";
 import { IRecipe } from "../../interfaces/Recipe";
+import { useQuery } from "react-query";
+import RecipeSkeleton from "./Skeleton";
+import RecipesAPI from "../../api/Recipes";
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -36,6 +39,13 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
   }),
 }));
 
+const arePropsEqual = (
+  prevProps: Readonly<{ recipe: IRecipe }>,
+  nextProps: Readonly<{ recipe: IRecipe }>
+) => {
+  return prevProps.recipe.id === nextProps.recipe.id;
+};
+
 const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
   const [expanded, setExpanded] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
@@ -44,14 +54,26 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
     setExpanded(!expanded);
   };
 
-  const calculatedLikes = useMemo(
-    () => recipe.aggregateLikes || 0 + Number(isLiked),
-    [isLiked, recipe.id]
+  const { isLoading, error, data } = useQuery<IRecipe, Error>(
+    ["RecipeInfo", recipe.id],
+    () => RecipesAPI.getRecipeInformationById(recipe.id)
   );
+
+  const calculatedLikes =
+    data?.aggregateLikes && data?.aggregateLikes + Number(isLiked);
+
+  if (isLoading)
+    return (
+      <Grid item xs={12} md={3} justifyContent="center">
+        <RecipeSkeleton />
+      </Grid>
+    );
+
+  if (error) return "An error has occurred: " + error.message;
 
   return (
     <Grid item xs={12} md={3} justifyContent="center">
-      <Card sx={{ maxWidth: 345, }}>
+      <Card sx={{ maxWidth: 345 }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -63,19 +85,21 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
               <MoreVertIcon />
             </IconButton>
           }
-          title={recipe.title}
-          subheader={`ready in (minutes): ${recipe.readyInMinutes}`}
+          title={data?.title}
+          subheader={`ready in (minutes): ${data?.readyInMinutes}`}
         />
         <CardMedia
           component="img"
           height="194"
-          image={recipe.image}
-          alt={recipe.image}
+          image={data?.image}
+          alt={data?.image}
         />
         <CardContent>
-          <Typography variant="body2" color="text.secondary">
-            {`Likes: ${calculatedLikes}`}
-          </Typography>
+          {calculatedLikes && (
+            <Typography variant="body2" color="text.secondary">
+              {`Likes: ${calculatedLikes}`}
+            </Typography>
+          )}
         </CardContent>
         <CardActions disableSpacing>
           <IconButton
@@ -98,7 +122,7 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
         </CardActions>
         <Collapse in={expanded} timeout="auto" unmountOnExit>
           <CardContent>
-            <Typography paragraph>{removeTags(recipe.instructions)}</Typography>
+            <Typography paragraph>{removeTags(data?.instructions)}</Typography>
           </CardContent>
         </Collapse>
       </Card>
@@ -106,4 +130,4 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
   );
 };
 
-export default RecipesItem;
+export default memo(RecipesItem, arePropsEqual);

@@ -3,21 +3,9 @@ import { Grid, TextField, Typography } from "@mui/material";
 import RecipesList from "../../components/RecipesList";
 import { useDebounce } from "../../hooks/useDebounce";
 
-// function debounce(func: () => any, timeout = 300) {
-//   let timer:any;
-//   return (...args: any[]) => {
-//     clearTimeout(timer);
-//     timer = setTimeout(() => {
-//       func.apply(this, args);
-//     }, timeout);
-//   };
-// }
-
 const Home = () => {
   const [searchText, setSearchText] = useState("");
   const debouncedSearchText = useDebounce<string>(searchText, 500)
-
-  console.log(debouncedSearchText);
 
   return (
     <Grid container justifyContent="center" rowGap={5}>
