@@ -1,18 +1,25 @@
-import { Grid, Card, CardMedia, CardContent, CardHeader } from "@mui/material";
+import { Grid } from "@mui/material";
 import { useQuery } from "react-query";
+import { IRecipe } from "../../interfaces/Recipe";
+import RecipesItem from "../RecipeItem";
+import axios from "axios";
+import { FC } from "react";
 
-interface IRecipe {
-  title: string;
-  image: string;
+interface IList {
+  queryString: string;
 }
 
-const RecipesList = () => {
-  const { isLoading, error, data } = useQuery<{ recipes: IRecipe[] }, Error>(
-    "RecipesListRandom",
+const RecipesList: FC<IList> = ({ queryString }) => {
+  const { isLoading, error, data } = useQuery<{ results: IRecipe[] }, Error>(
+    ["RecipesListRandom", queryString],
     () =>
-      fetch("http://localhost:3000/api/recipes/random").then((res) =>
-        res.json()
-      )
+      axios
+        .get("http://localhost:3000/api/recipes/complexSearch", {
+          params: {
+            queryString: queryString,
+          },
+        })
+        .then((res) => res.data)
   );
 
   if (isLoading) return "Loading...";
@@ -20,19 +27,9 @@ const RecipesList = () => {
   if (error) return "An error has occurred: " + error.message;
 
   return (
-    <Grid container spacing={3}> 
-      {data?.recipes?.map((recipe) => (
-        <Grid item xs={12} md={3} justifyContent="center">
-          <Card key={recipe.title}>
-            <CardHeader title={recipe.title}></CardHeader>
-            <CardMedia
-              component="img"
-              height="180"
-              image={recipe.image}
-              alt={recipe.title}
-            ></CardMedia>
-          </Card>
-        </Grid>
+    <Grid container spacing={3}>
+      {data?.results?.map((recipe) => (
+        <RecipesItem recipe={recipe} key={recipe.id} />
       ))}
     </Grid>
   );

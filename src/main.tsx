@@ -8,7 +8,9 @@ const queryClient = new QueryClient();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <App />
+      <div style={{ minHeight:'98vh', backgroundColor: "rgb(250, 250, 250)" }}>
+        <App />
+      </div>
     </QueryClientProvider>
   </React.StrictMode>
 );
