@@ -3,7 +3,7 @@ import axios from "axios";
 class RecipesAPI {
   static getComplexQueryRecipes = async (queryString: string) => {
     return axios
-      .get("http://localhost:3000/api/recipes/complexSearch", {
+      .get("recipes/complexSearch", {
         params: {
           queryString: queryString,
         },
@@ -13,7 +13,7 @@ class RecipesAPI {
 
   static getRecipeInformationById = async (id: number) => {
     return axios
-      .get(`http://localhost:3000/api/recipes/${id}/information`)
+      .get(`recipes/${id}/information`)
       .then((res) => res.data);
   };
 }
