@@ -1,10 +1,21 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.tsx";
+import { QueryClient, QueryClientProvider } from "react-query";
+import axios from "axios";
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
+// config api
+axios.defaults.baseURL =
+  import.meta.env.VITE_SERVER_URL || "http://localhost:3000/api/";
+
+const queryClient = new QueryClient();
+
+ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+    <QueryClientProvider client={queryClient}>
+      <div style={{ minHeight: "98vh", backgroundColor: "rgb(250, 250, 250)" }}>
+        <App />
+      </div>
+    </QueryClientProvider>
+  </React.StrictMode>
+);
