@@ -86,7 +86,7 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
             </IconButton>
           }
           title={data?.title}
-          subheader={`ready in (minutes): ${data?.readyInMinutes}`}
+          subheader={`ready in: ${data?.readyInMinutes} minutes`}
         />
         <CardMedia
           component="img"
