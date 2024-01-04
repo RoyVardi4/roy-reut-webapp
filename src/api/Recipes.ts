@@ -16,6 +16,12 @@ class RecipesAPI {
       .get(`recipes/${id}/information`)
       .then((res) => res.data);
   };
+
+  static getMyRecipe = async () => {
+    return axios
+      .get(`recipes/users`)
+      .then((res) => res.data);
+  };
 }
 
 export default RecipesAPI;
