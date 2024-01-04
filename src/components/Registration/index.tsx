@@ -3,7 +3,7 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
+import { Link, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -15,7 +15,9 @@ import { IUser } from '../../interfaces/User';
 import RegistrationAPI from '../../api/Registration';
 
 export default function Registration() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate()
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const user:IUser = {
@@ -23,7 +25,8 @@ export default function Registration() {
         password: data.get('password') as string 
     };
 
-    RegistrationAPI.registerUser(user);
+    await RegistrationAPI.registerUser(user);
+    navigate('/login', {replace: true});
   };
 
   const defaultTheme = createTheme();
@@ -80,7 +83,7 @@ export default function Registration() {
             </Button>
             <Grid container justifyContent="flex-end">
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link to="/login">
                   Already have an account? Sign in
                 </Link>
               </Grid>

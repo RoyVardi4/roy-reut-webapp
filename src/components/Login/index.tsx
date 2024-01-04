@@ -5,7 +5,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
+import { Link, useNavigate } from 'react-router-dom'
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
@@ -15,9 +15,12 @@ import createTheme from "@mui/material/styles/createTheme";
 import { ThemeProvider } from '@mui/material/styles';
 import { IUser } from '../../interfaces/User';
 import LoginAPI from '../../api/Login';
+import { useQuery } from 'react-query';
 
 export default function Login() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate()
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const user: IUser = {
@@ -25,7 +28,16 @@ export default function Login() {
       password: data.get('password') as string
     };
 
-    LoginAPI.userLogin(user);
+    try {
+      const promise = await LoginAPI.userLogin(user);
+      if (user.accessToken && user.refreshToken) {
+        navigate('/', {replace: true});
+      } else {
+        alert('error logging in')
+      }
+    } catch(err) {
+      alert(err)
+    }    
   };
 
   const defaultTheme = createTheme();
@@ -83,7 +95,7 @@ export default function Login() {
           </Button>
           <Grid container>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link to="/register">
                 {"Don't have an account? Sign Up"}
               </Link>
             </Grid>

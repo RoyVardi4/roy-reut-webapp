@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Grid, TextField, Typography } from "@mui/material";
 import RecipesList from "../../components/RecipesList";
 import { useDebounce } from "../../hooks/useDebounce";
-import Registration from "../../components/Registration";
-import Login from "../../components/Login";
 
 const Home = () => {
   const [searchText, setSearchText] = useState("");
@@ -17,12 +15,6 @@ const Home = () => {
         </Typography>
       </Grid>
       <Grid item xs={10}>
-        <Registration/>
-      </Grid>
-      <Grid item xs={10}>
-        <Login/>
-      </Grid>
-      {/* <Grid item xs={10}>
         <TextField
           fullWidth
           label="search"
@@ -33,7 +25,7 @@ const Home = () => {
       </Grid>
       <Grid item xs={10}>
         <RecipesList queryString={debouncedSearchText} />
-      </Grid> */}
+      </Grid>
     </Grid>
   );
 };
