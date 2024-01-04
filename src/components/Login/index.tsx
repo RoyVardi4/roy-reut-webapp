@@ -16,6 +16,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { IUser } from '../../interfaces/User';
 import LoginAPI from '../../api/Login';
 import { useQuery } from 'react-query';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const navigate = useNavigate()
@@ -40,6 +41,23 @@ export default function Login() {
     }    
   };
 
+  const loginGoogle = useGoogleLogin({
+    onSuccess: (codeResponse) => {
+      console.log(codeResponse)
+      try {
+        //todo: add access token to user
+        if (codeResponse.access_token) {
+          navigate('/', {replace: true});
+        } else {
+          alert('error logging in')
+        }
+      } catch(err) {
+        alert(err)
+      }  
+    },
+    onError: (error) => console.log("Login Failed:", error),
+  });
+
   const defaultTheme = createTheme();
 
   return (
@@ -60,6 +78,7 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
+        <button onClick={() => loginGoogle()}>Sign in with Google 🚀 </button>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"
