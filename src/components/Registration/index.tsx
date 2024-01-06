@@ -25,8 +25,12 @@ export default function Registration() {
         password: data.get('password') as string 
     };
 
-    await RegistrationAPI.registerUser(user);
-    navigate('/login', {replace: true});
+    try {
+      await RegistrationAPI.registerUser(user);
+      navigate('/login', {replace: true});
+    } catch (err) {
+      alert(err)
+    }
   };
 
   const defaultTheme = createTheme();

@@ -9,7 +9,6 @@ class LoginAPI {
       })
       .then((res) => {
         localStorage.setItem('email', user.email);
-        localStorage.setItem('password', user.password);
         localStorage.setItem('accessToken', res.data.accessToken);
         localStorage.setItem('refreshToken', res.data.refreshToken);
       });
