@@ -56,7 +56,7 @@ const RecipesItem: FC<{ recipe: IRecipe }> = ({ recipe }) => {
 
   const { isLoading, error, data } = useQuery<IRecipe, Error>(
     ["RecipeInfo", recipe.id],
-    () => RecipesAPI.getRecipeInformationById(recipe.id)
+    () => RecipesAPI.getRecipeInformationById(recipe.id!)
   );
 
   const calculatedLikes =
