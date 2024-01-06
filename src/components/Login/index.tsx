@@ -15,8 +15,7 @@ import createTheme from "@mui/material/styles/createTheme";
 import { ThemeProvider } from '@mui/material/styles';
 import { IUser } from '../../interfaces/User';
 import LoginAPI from '../../api/Login';
-import { useQuery } from 'react-query';
-import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
+import { useGoogleLogin } from '@react-oauth/google';
 
 export default function Login() {
   const navigate = useNavigate()
@@ -30,8 +29,8 @@ export default function Login() {
     };
 
     try {
-      const promise = await LoginAPI.userLogin(user);
-      if (user.accessToken && user.refreshToken) {
+      await LoginAPI.userLogin(user);
+      if (localStorage.getItem('accessToken') && localStorage.getItem('refreshToken')) {
         navigate('/', {replace: true});
       } else {
         alert('error logging in')
@@ -43,10 +42,9 @@ export default function Login() {
 
   const loginGoogle = useGoogleLogin({
     onSuccess: (codeResponse) => {
-      console.log(codeResponse)
       try {
-        //todo: add access token to user
         if (codeResponse.access_token) {
+          localStorage.setItem('accessToken', codeResponse.access_token);
           navigate('/', {replace: true});
         } else {
           alert('error logging in')
@@ -78,7 +76,7 @@ export default function Login() {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <button onClick={() => loginGoogle()}>Sign in with Google 🚀 </button>
+        <Button onClick={() => loginGoogle()} >Sign in with Google</Button>
         <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
           <TextField
             margin="normal"

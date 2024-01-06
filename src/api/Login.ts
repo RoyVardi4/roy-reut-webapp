@@ -8,8 +8,10 @@ class LoginAPI {
         user
       })
       .then((res) => {
-        user.accessToken = res.data.accessToken
-        user.refreshToken = res.data.refreshToken
+        localStorage.setItem('email', user.email);
+        localStorage.setItem('password', user.password);
+        localStorage.setItem('accessToken', res.data.accessToken);
+        localStorage.setItem('refreshToken', res.data.refreshToken);
       });
   };
 }

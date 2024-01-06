@@ -1,22 +1,27 @@
 import {
   BrowserRouter as Router,
   Routes,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom";
-import Home from './pages/Home';
-import LoginPage from "./pages/Login";
-import RegistrationPage from "./pages/Registration";
+import { PrivateRoutes } from "./PrivateRoutes"
+import { PublicRoutes } from "./PublicRoutes"
 
-const App = () => {
+export const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegistrationPage />} />
-        <Route path="/" element={<Home />} />
+        {
+          localStorage.getItem('accessToken')
+            ? <Route path="/*" element={<PrivateRoutes />} />
+            : <Route path="/*" element={<PublicRoutes />} />
+        }
+
+        <Route path='*' element={<Navigate to='/login' replace />} />
+
       </Routes>
     </Router>
-  );
+  )
 }
 
 export default App;
