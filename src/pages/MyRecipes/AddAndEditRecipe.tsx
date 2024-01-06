@@ -1,17 +1,17 @@
-import { ChangeEvent, FC, FormEvent, useState } from "react";
+import { ChangeEvent, FC, useState } from "react";
 import RecipesAPI from "../../api/Recipes";
-import { Box, Button, Grid, Stack, TextField, Typography } from "@mui/material";
-import { AttachFile, Close } from "@mui/icons-material";
-import { MuiFileInput } from "mui-file-input";
+import { Box, Button, Grid, TextField, Typography } from "@mui/material";
 import { IMyRecipe } from "../../interfaces/Recipe";
 
 interface IProps {
   recipeToUpdate?: IMyRecipe;
-  handleFinishedSave: (isSuccess: boolean, message: string) => void
+  handleFinishedSave: (isSuccess: boolean, message: string) => void;
 }
 
-const AddAndEditRecipe: FC<IProps> = ({ recipeToUpdate, handleFinishedSave }) => {
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+const AddAndEditRecipe: FC<IProps> = ({
+  recipeToUpdate,
+  handleFinishedSave,
+}) => {
   const [myRecipe, setMyRecipe] = useState<IMyRecipe | undefined>(
     recipeToUpdate
   );
@@ -27,23 +27,16 @@ const AddAndEditRecipe: FC<IProps> = ({ recipeToUpdate, handleFinishedSave }) =>
     });
   };
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
     if (myRecipe) {
       try {
-        const justCreatedRecipe = await RecipesAPI.createNewRecipe(myRecipe!);
-
-        selectedImage &&
-          justCreatedRecipe._id &&
-          (await RecipesAPI.addImageToRecipe(
-            selectedImage,
-            String(justCreatedRecipe._id)
-          ));
-      } catch (e:any) {
-        // handleFinishedSave(false, e.message)
-        console.log(e.message);
+        await RecipesAPI.createNewRecipe(myRecipe!);
+      } catch (e: any) {
+        handleFinishedSave(false, e.message);
       }
 
-      // handleFinishedSave(true, "data saved successfully!")
+      handleFinishedSave(true, "data saved successfully!");
     }
   };
 
@@ -51,7 +44,7 @@ const AddAndEditRecipe: FC<IProps> = ({ recipeToUpdate, handleFinishedSave }) =>
     <Grid container justifyContent="center" rowGap={5}>
       <Grid item xs={10}>
         <Typography variant="h6" textAlign="center">
-          Create new Recipe
+          {recipeToUpdate?._id ? `Update Recipe: ${recipeToUpdate.title}` : `Create new Recipe`}
         </Typography>
       </Grid>
       <Grid item xs={10}>
@@ -78,33 +71,6 @@ const AddAndEditRecipe: FC<IProps> = ({ recipeToUpdate, handleFinishedSave }) =>
             id="instructions"
             autoComplete="instructions"
           />
-          <Stack direction="row" spacing={4}>
-            <MuiFileInput
-              value={selectedImage}
-              onChange={(file) => {
-                setSelectedImage(file || null);
-              }}
-              placeholder="Add Image to Recipe"
-              clearIconButtonProps={{
-                title: "Remove",
-                children: <Close fontSize="small" />,
-              }}
-              inputProps={{
-                startAdornment: <AttachFile />,
-                accept: ".png, .jpeg .jpg",
-              }}
-            />
-            {selectedImage && (
-              <div>
-                <img
-                  alt="not found"
-                  width={"140px"}
-                  src={URL.createObjectURL(selectedImage)}
-                />
-              </div>
-            )}
-          </Stack>
-
           <Button
             type="submit"
             fullWidth

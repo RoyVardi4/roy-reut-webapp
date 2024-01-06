@@ -14,6 +14,7 @@ interface IRecipe extends IBasicRecipe {
 interface IMyRecipe extends IBasicRecipe {
   _id?: string;
   title?: string;
+  file?: string;
 }
 
 export type { IRecipe, IMyRecipe };
