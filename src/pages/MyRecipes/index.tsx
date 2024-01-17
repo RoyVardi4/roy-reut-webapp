@@ -26,7 +26,7 @@ function TransitionLeft(props: any) {
 }
 
 const MyRecipes = () => {
-  const { isLoading, error, data, refetch } = useQuery<IMyRecipe[], Error>(
+  const { isLoading, error, data, refetch} = useQuery<IMyRecipe[], Error>(
     ["UserRecipes"],
     () => RecipesAPI.getUsersRecipe(),
     {
@@ -83,7 +83,7 @@ const MyRecipes = () => {
             My Recipes:
           </Typography>
         </Grid>
-        <Grid item xs={10} spacing={3}>
+        <Grid item xs={10}>
           {[1, 2, 3, 4].map((i) => (
             <Grid key={i} item xs={12} md={3} justifyContent="center">
               <RecipeSkeleton />
@@ -117,7 +117,7 @@ const MyRecipes = () => {
                   image={`${
                     import.meta.env.VITE_SERVER_URL ||
                     "http://localhost:3000/api/"
-                  }recipes/img/${recipe._id}`}
+                  }recipes/img/${recipe._id}?${new Date().getTime()}`}
                   onError={handleImageError}
                   alt={recipe.title}
                 />
@@ -130,14 +130,6 @@ const MyRecipes = () => {
                   alt={recipe.title}
                 />
               )}
-
-              {/* 
-              ///////////////
-                TODO: allow to click the action buttons only to 
-                      the logged in user recipe and not other recipes  
-              ///////////////
-              */}
-
               <CardActions>
                 <IconButton
                   onClick={() =>
