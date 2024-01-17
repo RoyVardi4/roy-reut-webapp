@@ -1,3 +1,4 @@
+import axios, { AxiosRequestConfig } from "axios";
 import {
   createContext,
   useContext,
@@ -5,6 +6,7 @@ import {
   useEffect,
   ReactNode,
 } from "react";
+import LogoutAPI from "../api/Logout";
 
 interface User {
   username: string;
