@@ -1,17 +1,22 @@
 import {
   Alert,
+  Avatar,
   Card,
   CardActions,
+  CardContent,
   CardHeader,
   CardMedia,
   Dialog,
   Fab,
+  FormControlLabel,
   Grid,
   IconButton,
   Snackbar,
+  Switch,
   Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
+import { useUser } from "../../context/user";
 import { IMyRecipe } from "../../interfaces/Recipe";
 import RecipesAPI from "../../api/Recipes";
 import RecipeSkeleton from "../../components/RecipeItem/Skeleton";
@@ -26,7 +31,8 @@ function TransitionLeft(props: any) {
 }
 
 const MyRecipes = () => {
-  const { isLoading, error, data, refetch} = useQuery<IMyRecipe[], Error>(
+  const { user } = useUser();
+  const { isLoading, error, data, refetch } = useQuery<IMyRecipe[], Error>(
     ["UserRecipes"],
     () => RecipesAPI.getUsersRecipe(),
     {
@@ -45,6 +51,7 @@ const MyRecipes = () => {
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [editRecipe, setEditRecipe] = useState<IMyRecipe | undefined>();
+  const [onlyMyRecipes, setOnlyMyRecipes] = useState(false);
 
   const changeDialogState = (
     recipe: IMyRecipe | undefined,
@@ -80,7 +87,7 @@ const MyRecipes = () => {
       <Grid container justifyContent="center" rowGap={5}>
         <Grid item xs={10}>
           <Typography variant="h6" textAlign="center">
-            My Recipes:
+            All Users Recipes:
           </Typography>
         </Grid>
         <Grid item xs={10}>
@@ -95,20 +102,72 @@ const MyRecipes = () => {
 
   if (error) return "An error has occurred: " + error.message;
 
+  const filteredRecipes = () => {
+    return data?.filter((recipe) => {
+      if (onlyMyRecipes) {
+        return recipe.author?.email === user?.email;
+      } else {
+        return true;
+      }
+    });
+  };
+
+  const uniq = data?.map((recipe) => {
+    return recipe.author?.email;
+  });
+  const uniqEmails = [...new Set(uniq)];
+  const stringToColour = (str: string) => {
+    let hash = 0;
+    str.split("").forEach((char) => {
+      hash = char.charCodeAt(0) + ((hash << 5) - hash);
+    });
+    let colour = "#";
+    for (let i = 0; i < 3; i++) {
+      const value = (hash >> (i * 8)) & 0xff;
+      colour += value.toString(16).padStart(2, "0");
+    }
+    return colour;
+  };
+  const avatarColors = uniqEmails.map((email) => ({
+    email: email,
+    color: stringToColour(email || ""),
+  }));
+
   return (
     <Grid container justifyContent="center" rowGap={5}>
       <Grid item xs={10}>
         <Typography variant="h6" textAlign="center">
-          My Recipes:
+          All Users Recipes
         </Typography>
+        <FormControlLabel
+          control={
+            <Switch
+              onChange={() => setOnlyMyRecipes((prev) => !prev)}
+              value={onlyMyRecipes}
+            />
+          }
+          label="Only My Recipes"
+        />
       </Grid>
       <Grid container item xs={10} spacing={3}>
-        {data?.map((recipe) => (
+        {filteredRecipes()?.map((recipe) => (
           <Grid key={recipe._id} item xs={12} md={3}>
             <Card>
               <CardHeader
+                avatar={
+                  <Avatar
+                    sx={{
+                      bgcolor: avatarColors.find(
+                        (el) => el.email === recipe.author?.email
+                      )?.color,
+                    }}
+                    aria-label="recipe"
+                  >
+                    {recipe.author?.email?.charAt(0).toUpperCase()}
+                  </Avatar>
+                }
                 title={recipe.title}
-                subheader={recipe.instructions}
+                subheader={recipe.author?.email}
               />
               {recipe.file ? (
                 <CardMedia
@@ -130,22 +189,29 @@ const MyRecipes = () => {
                   alt={recipe.title}
                 />
               )}
-              <CardActions>
-                <IconButton
-                  onClick={() =>
-                    changeDialogState(recipe, setIsDetailsDialogOpen)
-                  }
-                >
-                  <Edit />
-                </IconButton>
-                <IconButton
-                  onClick={() =>
-                    changeDialogState(recipe, setIsImageDialogOpen)
-                  }
-                >
-                  <CameraAlt />
-                </IconButton>
-              </CardActions>
+              <CardContent>
+                <Typography variant="body2" color="text.secondary">
+                  {recipe.instructions}
+                </Typography>
+              </CardContent>
+              {recipe.author?.email === user?.email && (
+                <CardActions>
+                  <IconButton
+                    onClick={() =>
+                      changeDialogState(recipe, setIsDetailsDialogOpen)
+                    }
+                  >
+                    <Edit />
+                  </IconButton>
+                  <IconButton
+                    onClick={() =>
+                      changeDialogState(recipe, setIsImageDialogOpen)
+                    }
+                  >
+                    <CameraAlt />
+                  </IconButton>
+                </CardActions>
+              )}
             </Card>
           </Grid>
         ))}
@@ -186,7 +252,7 @@ const MyRecipes = () => {
         />
       </Dialog>
       <Snackbar
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         TransitionComponent={TransitionLeft}
         open={isSnackbarOpen}
         autoHideDuration={6000}

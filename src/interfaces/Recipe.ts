@@ -1,3 +1,5 @@
+import { IUser } from "./User";
+
 interface IBasicRecipe {
   summary?: string;
   instructions?: string;
@@ -15,6 +17,7 @@ interface IMyRecipe extends IBasicRecipe {
   _id?: string;
   title?: string;
   file?: string;
+  author?: IUser;
 }
 
 export type { IRecipe, IMyRecipe };
