@@ -1,3 +1,4 @@
+import { IRecipeComment } from "./RecipeComment";
 import { IUser } from "./User";
 
 interface IBasicRecipe {
@@ -18,6 +19,7 @@ interface IMyRecipe extends IBasicRecipe {
   title?: string;
   file?: string;
   author?: IUser;
+  comments?: IRecipeComment[]
 }
 
 export type { IRecipe, IMyRecipe };

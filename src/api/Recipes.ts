@@ -43,6 +43,14 @@ class RecipesAPI {
       })
       .then((res) => res.data as IMyRecipe);
   };
+
+  static postComment = async () => {
+    return axios
+      .post("recipes/users/comments", {
+        // recipe: recipe,
+      })
+      .then((res) => res.data);
+  };
 }
 
 export default RecipesAPI;

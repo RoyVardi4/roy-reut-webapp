@@ -25,6 +25,7 @@ import { SetStateAction, useState } from "react";
 import AddImageToRecipe from "./AddImage";
 import { Add, CameraAlt, Edit } from "@mui/icons-material";
 import Slide from "@mui/material/Slide";
+import Comments from "./Comments";
 
 function TransitionLeft(props: any) {
   return <Slide {...props} direction="left" />;
@@ -213,6 +214,7 @@ const MyRecipes = () => {
                 </CardActions>
               )}
             </Card>
+            <Comments comments={recipe.comments || []} />
           </Grid>
         ))}
       </Grid>
