@@ -61,6 +61,10 @@ class RecipesAPI {
       })
       .then((res) => res.data);
   };
+
+  static deleteRecipe = (recipeId: string) => {
+    return axios.delete(`recipes/${recipeId}`)
+  }
 }
 
 export default RecipesAPI;

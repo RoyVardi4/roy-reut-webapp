@@ -23,7 +23,7 @@ import RecipeSkeleton from "../../components/RecipeItem/Skeleton";
 import AddAndEditRecipe from "./AddAndEditRecipe";
 import { SetStateAction, useState } from "react";
 import AddImageToRecipe from "./AddImage";
-import { Add, CameraAlt, Edit } from "@mui/icons-material";
+import { Add, CameraAlt, Delete, Edit } from "@mui/icons-material";
 import Slide from "@mui/material/Slide";
 import Comments from "./Comments";
 
@@ -81,6 +81,16 @@ const MyRecipes = () => {
     e.target.onerror = null;
     e.target.src =
       "https://www.pulsecarshalton.co.uk/wp-content/uploads/2016/08/jk-placeholder-image.jpg";
+  };
+
+  const handleDeleteRecipe = async (recipeId: string) => {
+    await RecipesAPI.deleteRecipe(recipeId);
+    refetch()
+    setIsSnackbarOpen(true);
+    setSnackbarProps({
+      isSuccess: true,
+      message: "recipe deleted sccuessfully",
+    });
   };
 
   if (isLoading)
@@ -210,6 +220,11 @@ const MyRecipes = () => {
                     }
                   >
                     <CameraAlt />
+                  </IconButton>
+                  <IconButton
+                    onClick={() => handleDeleteRecipe(recipe._id!)}
+                  >
+                    <Delete />
                   </IconButton>
                 </CardActions>
               )}
