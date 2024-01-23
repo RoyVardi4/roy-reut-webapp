@@ -23,6 +23,10 @@ class RecipesAPI {
     return axios.get(`recipes/users`).then((res) => res.data);
   };
 
+  static getUserRecipeComments = async (recipeId: string) => {
+    return axios.get(`recipes/users/${recipeId}`).then((res) => res.data);
+  };
+
   static addImageToRecipe = async (file: File, recipeId: string) => {
     let formData = new FormData();
     formData.append("recipeImage", file);
@@ -44,10 +48,16 @@ class RecipesAPI {
       .then((res) => res.data as IMyRecipe);
   };
 
-  static postComment = async () => {
+  static postComment = async (
+    recipeId: string,
+    payload: {desc: string}
+  ): Promise<IMyRecipe> => {
     return axios
       .post("recipes/users/comments", {
-        // recipe: recipe,
+        comment: {
+          recipeId: recipeId,
+          payload: payload,
+        },
       })
       .then((res) => res.data);
   };

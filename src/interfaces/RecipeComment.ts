@@ -3,7 +3,7 @@ import { IUser } from "./User";
 interface IRecipeComment {
     _id?: string;
     desc: string;
-    author: IUser
+    author: string
   }
   
   export type { IRecipeComment };

@@ -214,7 +214,7 @@ const MyRecipes = () => {
                 </CardActions>
               )}
             </Card>
-            <Comments comments={recipe.comments || []} />
+            <Comments recipeId={recipe._id!} />
           </Grid>
         ))}
       </Grid>
