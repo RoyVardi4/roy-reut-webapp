@@ -37,7 +37,7 @@ export default function Login() {
         accessToken &&
         localStorage.getItem("refreshToken")
       ) {
-        login({ username: accessToken });
+        login({ email: data.get("email") as string });
         navigate("/", { replace: true });
       } else {
         alert("error logging in");
@@ -53,7 +53,8 @@ export default function Login() {
         if (codeResponse.access_token) {
           localStorage.setItem("accessToken", codeResponse.access_token);
 
-          login({ username: codeResponse.access_token });
+          // TODO: need to change to email after fix google auth
+          login({ email: codeResponse.access_token });
           navigate("/", { replace: true });
         } else {
           alert("error logging in");

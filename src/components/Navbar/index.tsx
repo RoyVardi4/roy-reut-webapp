@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 const pages = [
   { label: "Home", link: "/" },
   { label: "My Recipes", link: "/myrecipes" },
+  { label: "My Profile", link: "/profile" },
 ];
 
 export function NavBar() {

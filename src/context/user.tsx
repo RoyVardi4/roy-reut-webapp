@@ -1,4 +1,3 @@
-import axios, { AxiosRequestConfig } from "axios";
 import {
   createContext,
   useContext,
@@ -6,10 +5,9 @@ import {
   useEffect,
   ReactNode,
 } from "react";
-import LogoutAPI from "../api/Logout";
 
 interface User {
-  username: string;
+  email: string;
 }
 
 interface UserContextProps {
@@ -28,8 +26,8 @@ export const UserProvider: React.FC<UserProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const user = localStorage.getItem("accessToken");
-    user && setUser({ username: user });
+    const email = localStorage.getItem("email");
+    email && setUser({ email: email });
   }, []);
 
   const login = (userData: User) => {
