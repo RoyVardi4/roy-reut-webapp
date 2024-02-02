@@ -16,9 +16,11 @@ import {
 } from "@mui/material";
 import { CameraAlt as Camera, Edit } from "@mui/icons-material";
 import { useState } from "react";
+import EditProfile from "./EditProfile";
 
 const UserProfile = ({}) => {
   const [isImageOpen, setIsImageOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [sackbarProps, setSnackbarProps] = useState<{
     isSuccess: boolean;
@@ -29,7 +31,6 @@ const UserProfile = ({}) => {
     isLoading,
     error,
     data: user,
-    refetch,
   } = useQuery<IUser, Error>(["UserInfo"], () => UserAPI.getUserInfo());
 
   const handleImageError = (e: any) => {
@@ -43,6 +44,7 @@ const UserProfile = ({}) => {
 
   const handleFinishedSave = (isSuccess: boolean, message: string) => {
     setIsImageOpen(false);
+    setIsEditProfileOpen(false);
     setIsSnackbarOpen(true);
     setSnackbarProps({
       isSuccess: isSuccess,
@@ -69,8 +71,8 @@ const UserProfile = ({}) => {
             <Camera />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Edit my status">
-          <IconButton>
+        <Tooltip title="Edit profile">
+          <IconButton onClick={() => setIsEditProfileOpen(true)}>
             <Edit />
           </IconButton>
         </Tooltip>
@@ -80,11 +82,10 @@ const UserProfile = ({}) => {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         open={isSnackbarOpen}
         autoHideDuration={6000}
-        // onClose={handleCloseSnackbar}
       >
         <Alert
-          // onClose={handleCloseSnackbar}
-          severity="success"
+          onClose={() => setIsSnackbarOpen(false)}
+          severity={sackbarProps?.isSuccess ? "success" : "error"}
           sx={{ width: "100%" }}
         >
           {sackbarProps?.message}
@@ -94,6 +95,15 @@ const UserProfile = ({}) => {
         <AddProfileImage
           handleFinishedSave={handleFinishedSave}
           userEmail={user?.email}
+        />
+      </Dialog>
+      <Dialog
+        open={isEditProfileOpen}
+        onClose={() => setIsEditProfileOpen(false)}
+      >
+        <EditProfile
+          handleFinishedSave={handleFinishedSave}
+          status={user?.status || ""}
         />
       </Dialog>
     </Card>
