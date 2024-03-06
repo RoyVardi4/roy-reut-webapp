@@ -17,6 +17,7 @@ import { IUser } from "../../interfaces/User";
 import LoginAPI from "../../api/Login";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useUser } from "../../context/user";
+import axios from "axios";
 
 export default function Login() {
   const { login } = useUser();
@@ -32,13 +33,10 @@ export default function Login() {
 
     try {
       await LoginAPI.userLogin(user);
-      const accessToken = localStorage.getItem("accessToken")
-      if (
-        accessToken &&
-        localStorage.getItem("refreshToken")
-      ) {
+      const accessToken = localStorage.getItem("accessToken");
+      if (accessToken && localStorage.getItem("refreshToken")) {
         login({ email: data.get("email") as string });
-        navigate("/", { replace: true });
+        navigate("/myrecipes", { replace: true });
       } else {
         alert("error logging in");
       }
@@ -48,14 +46,17 @@ export default function Login() {
   };
 
   const loginGoogle = useGoogleLogin({
-    onSuccess: (codeResponse) => {
+    onSuccess: async (codeResponse) => {
       try {
         if (codeResponse.access_token) {
-          localStorage.setItem("accessToken", codeResponse.access_token);
+          const googleResponse = await axios.get(
+            `https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${codeResponse.access_token}`
+          );
 
-          // TODO: need to change to email after fix google auth
-          login({ email: codeResponse.access_token });
-          navigate("/", { replace: true });
+          localStorage.setItem("accessToken", codeResponse.access_token);
+          localStorage.setItem("email", googleResponse.data.email);
+          login({ email: googleResponse.data.email });
+          navigate("/myrecipes", { replace: true });
         } else {
           alert("error logging in");
         }
