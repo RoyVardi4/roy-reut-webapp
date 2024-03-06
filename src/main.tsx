@@ -11,7 +11,7 @@ axios.defaults.baseURL =
   import.meta.env.VITE_SERVER_URL || "http://localhost:3000/api/";
 
 const clientId =
-  import.meta.env.CLIENT_ID ||
+  import.meta.env.VITE_CLIENT_ID ||
   "805268564127-lo969u7vj3g7cfppecqmubpcv0ht183a.apps.googleusercontent.com";
 
 const queryClient = new QueryClient();
