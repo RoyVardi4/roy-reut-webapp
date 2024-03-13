@@ -1,5 +1,3 @@
-import { IUser } from "./User";
-
 interface IRecipeComment {
     _id?: string;
     desc: string;
