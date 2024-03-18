@@ -16,6 +16,7 @@ import {
 import { useMutation, useQuery } from "react-query";
 import { IMyRecipe } from "../../interfaces/Recipe";
 import { Send } from "@mui/icons-material";
+import ModeCommentIcon from "@mui/icons-material/ModeComment";
 
 interface IProps {
   recipeId: string;
@@ -60,7 +61,7 @@ const Comments: FC<IProps> = ({ recipeId }) => {
     handleAddComment(recipeId, {
       desc: newComment,
     });
-    setNewComment("")
+    setNewComment("");
   };
 
   if (isLoading) return "Loading...";
@@ -68,7 +69,9 @@ const Comments: FC<IProps> = ({ recipeId }) => {
 
   return (
     <>
-      <Button onClick={() => setIsDialogOpen(true)}>Open Comments</Button>
+      <Button fullWidth endIcon={<ModeCommentIcon />} variant="text" onClick={() => setIsDialogOpen(true)}>
+        Comments
+      </Button>
       <Dialog
         fullWidth
         open={isDialogOpen}
@@ -77,7 +80,9 @@ const Comments: FC<IProps> = ({ recipeId }) => {
         <Card>
           <CardHeader title="Comments"></CardHeader>
           <CardContent>
-            <div style={{ overflow: "auto", maxHeight: "20em", minHeight: "20em" }}>
+            <div
+              style={{ overflow: "auto", maxHeight: "20em", minHeight: "20em" }}
+            >
               {recipe?.comments?.map((comment) => (
                 <Stack m={2} key={comment._id} direction="row" gap={1}>
                   <Avatar></Avatar>

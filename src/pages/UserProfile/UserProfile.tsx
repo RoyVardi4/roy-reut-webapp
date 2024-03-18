@@ -31,6 +31,7 @@ const UserProfile = ({}) => {
     isLoading,
     error,
     data: user,
+    refetch
   } = useQuery<IUser, Error>(["UserInfo"], () => UserAPI.getUserInfo());
 
   const handleImageError = (e: any) => {
@@ -50,6 +51,7 @@ const UserProfile = ({}) => {
       isSuccess: isSuccess,
       message: message,
     });
+    refetch()
   };
 
   return (
