@@ -13,6 +13,7 @@ import {
   IconButton,
   Snackbar,
   Switch,
+  TextField,
   Typography,
 } from "@mui/material";
 import { useQuery } from "react-query";
@@ -53,6 +54,7 @@ const MyRecipes = () => {
   const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
   const [editRecipe, setEditRecipe] = useState<IMyRecipe | undefined>();
   const [onlyMyRecipes, setOnlyMyRecipes] = useState(false);
+  const [searchText, setSearchText] = useState("");
 
   const changeDialogState = (
     recipe: IMyRecipe | undefined,
@@ -85,7 +87,7 @@ const MyRecipes = () => {
 
   const handleDeleteRecipe = async (recipeId: string) => {
     await RecipesAPI.deleteRecipe(recipeId);
-    refetch()
+    refetch();
     setIsSnackbarOpen(true);
     setSnackbarProps({
       isSuccess: true,
@@ -115,34 +117,20 @@ const MyRecipes = () => {
 
   const filteredRecipes = () => {
     return data?.filter((recipe) => {
-      if (onlyMyRecipes) {
-        return recipe.author?.email === user?.email;
+      if (
+        recipe.title?.toLowerCase().includes(searchText.toLowerCase()) ||
+        recipe.instructions?.toLowerCase().includes(searchText.toLowerCase())
+      ) {
+        if (onlyMyRecipes) {
+          return recipe.author?.email === user?.email;
+        } else {
+          return true;
+        }
       } else {
-        return true;
+        return false
       }
     });
   };
-
-  const uniq = data?.map((recipe) => {
-    return recipe.author?.email;
-  });
-  const uniqEmails = [...new Set(uniq)];
-  const stringToColour = (str: string) => {
-    let hash = 0;
-    str.split("").forEach((char) => {
-      hash = char.charCodeAt(0) + ((hash << 5) - hash);
-    });
-    let colour = "#";
-    for (let i = 0; i < 3; i++) {
-      const value = (hash >> (i * 8)) & 0xff;
-      colour += value.toString(16).padStart(2, "0");
-    }
-    return colour;
-  };
-  const avatarColors = uniqEmails.map((email) => ({
-    email: email,
-    color: stringToColour(email || ""),
-  }));
 
   return (
     <Grid container justifyContent="center" rowGap={5}>
@@ -159,6 +147,13 @@ const MyRecipes = () => {
           }
           label="Only My Recipes"
         />
+        <TextField
+          margin="normal"
+          fullWidth
+          label="search"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+        />
       </Grid>
       <Grid container item xs={10} spacing={3}>
         {filteredRecipes()?.map((recipe) => (
@@ -167,15 +162,18 @@ const MyRecipes = () => {
               <CardHeader
                 avatar={
                   <Avatar
-                    sx={{
-                      bgcolor: avatarColors.find(
-                        (el) => el.email === recipe.author?.email
-                      )?.color,
-                    }}
+                    src={
+                      recipe.author?.email &&
+                      `${
+                        import.meta.env.VITE_SERVER_URL ||
+                        "http://localhost:3000/api/"
+                      }users/myPhoto/${
+                        recipe.author?.email
+                      }?${new Date().getTime()}`
+                    }
+                    onError={handleImageError}
                     aria-label="recipe"
-                  >
-                    {recipe.author?.email?.charAt(0).toUpperCase()}
-                  </Avatar>
+                  ></Avatar>
                 }
                 title={recipe.title}
                 subheader={recipe.author?.email}
@@ -221,9 +219,7 @@ const MyRecipes = () => {
                   >
                     <CameraAlt />
                   </IconButton>
-                  <IconButton
-                    onClick={() => handleDeleteRecipe(recipe._id!)}
-                  >
+                  <IconButton onClick={() => handleDeleteRecipe(recipe._id!)}>
                     <Delete />
                   </IconButton>
                 </CardActions>
@@ -237,9 +233,9 @@ const MyRecipes = () => {
         sx={{
           margin: 0,
           top: "auto",
-          left: 60,
+          left: "auto",
           bottom: 60,
-          right: "auto",
+          right: 60,
           position: "fixed",
         }}
         variant="extended"

@@ -34,6 +34,7 @@ const EditUser: FC<IProps> = ({ handleFinishedSave, status }) => {
             <TextField
               value={statusToUpdate}
               onChange={(e) => setStatusToUpdate(e.target.value)}
+              label="Status"
             ></TextField>
           </Stack>
 
